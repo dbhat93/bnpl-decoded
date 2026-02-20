@@ -352,7 +352,6 @@
 
     .panel-inner {
       padding: 40px 48px 48px;
-      max-width: 720px;
     }
 
     .panel-eyebrow {
@@ -372,6 +371,7 @@
       letter-spacing: -0.02em;
       line-height: 1.2;
       margin-bottom: 24px;
+      max-width: 680px;
     }
 
     .panel-inner p {
@@ -379,6 +379,7 @@
       margin-bottom: 18px;
       font-size: 15.5px;
       line-height: 1.72;
+      max-width: 680px;
     }
 
     .panel-inner p:last-child { margin-bottom: 0; }
@@ -392,6 +393,7 @@
       border-radius: 0 8px 8px 0;
       padding: 16px 20px;
       margin: 24px 0;
+      max-width: 680px;
     }
 
     .callout.warn { border-left-color: var(--accent2); background: var(--accent2-dim); }
@@ -425,6 +427,7 @@
       padding: 28px 0 28px 20px;
       margin: 28px 0;
       position: relative;
+      max-width: 680px;
     }
 
     .pq::before {
@@ -663,8 +666,10 @@
 
     /* ── CONTEXT BAR ── */
     .context-bar {
-      background: rgba(124,106,247,0.07);
-      border-bottom: 1px solid rgba(124,106,247,0.2);
+      background: rgba(13,13,15,0.92);
+      border-bottom: 1px solid rgba(124,106,247,0.18);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       padding: 9px 28px;
       display: flex;
       align-items: center;
