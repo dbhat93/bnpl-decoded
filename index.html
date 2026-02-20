@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Will BNPL Blow Up?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0d0f;
+      --surface:   #141417;
+      --surface2:  #1c1c22;
+      --border:    #272730;
+      --border2:   #32323e;
+      --text:      #e8e8ed;
+      --muted:     #6e6e82;
+      --muted2:    #9898aa;
+      --accent:    #7c6af7;
+      --accent-dim: rgba(124,106,247,0.12);
+      --accent2:   #f7a26a;
+      --accent2-dim: rgba(247,162,106,0.12);
+      --accent3:   #6af7b8;
+      --red:       #f76a6a;
+      --yellow:    #f7d96a;
+      --font:      'Inter', system-ui, -apple-system, sans-serif;
+      --serif:     'Georgia', 'Times New Roman', serif;
+      --max:       780px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      background: rgba(13,13,15,0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-brand {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 2px;
+      background: var(--surface2);
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .nav-tab {
+      padding: 5px 16px;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .nav-tab:hover { color: var(--text); }
+    .nav-tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+    .nav-tab.active.t2 { color: var(--accent2); }
+
+    .nav-hint {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+
+    /* ── MAIN ── */
+    main { padding-top: 54px; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 72px 32px 56px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+
+    .hero-eyebrow.op { color: var(--accent2); }
+
+    .hero-eyebrow::before {
+      content: '';
+      width: 20px;
+      height: 1px;
+      background: currentColor;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 4.5vw, 54px);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.08;
+      margin-bottom: 20px;
+      max-width: 720px;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent2);
+    }
+
+    .hero h1 em.purple { color: var(--accent); }
+
+    .hero-sub {
+      font-size: 17px;
+      color: var(--muted2);
+      max-width: 540px;
+      line-height: 1.65;
+      margin-bottom: 44px;
+    }
+
+    /* ── STAT ROW ── */
+    .stats {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      max-width: 760px;
+    }
+
+    .stat {
+      flex: 1;
+      padding: 18px 22px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+    }
+
+    .stat:last-child { border-right: none; }
+
+    .stat-n {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .stat-l {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    /* ── NODE MAP CONTAINER ── */
+    .map-wrap {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 48px 32px 0;
+    }
+
+    .map-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    /* ── NODE FLOW ── */
+    .node-flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .node-flow::-webkit-scrollbar { display: none; }
+
+    .node-connector {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 36px;
+      position: relative;
+    }
+
+    .node-connector::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0; right: 0;
+      height: 1px;
+      background: var(--border2);
+      transform: translateY(-50%);
+    }
+
+    .node-connector-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border2);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── INDIVIDUAL NODE ── */
+    .node {
+      flex-shrink: 0;
+      position: relative;
+      cursor: pointer;
+      width: 148px;
+    }
+
+    .node-inner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 16px 14px;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+
+    .node:hover .node-inner {
+      border-color: var(--border2);
+      background: var(--surface2);
+    }
+
+    .node.active .node-inner {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .node.active.op-node .node-inner {
+      border-color: var(--accent2);
+      background: var(--accent2-dim);
+      box-shadow: 0 0 0 1px var(--accent2);
+    }
+
+    .node-num {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .node.active .node-num { color: var(--accent); }
+    .node.active.op-node .node-num { color: var(--accent2); }
+
+    .node-title {
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .node-teaser {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    /* active indicator arrow */
+    .node-arrow {
+      display: none;
+      position: absolute;
+      bottom: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid var(--accent);
+    }
+
+    .node.active .node-arrow { display: block; }
+    .node.active.op-node .node-arrow { border-top-color: var(--accent2); }
+
+    /* ── CONTENT PANEL ── */
+    .content-panel-wrap {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    .content-panel {
+      display: none;
+      margin-top: 24px;
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--accent);
+      border-radius: 0 0 12px 12px;
+      background: var(--surface);
+      animation: panelIn 0.25s ease;
+    }
+
+    .content-panel.op { border-top-color: var(--accent2); }
+
+    .content-panel.open { display: block; }
+
+    @keyframes panelIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-inner {
+      padding: 40px 48px 48px;
+      max-width: 720px;
+    }
+
+    .panel-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .panel-eyebrow.op { color: var(--accent2); }
+
+    .panel-inner h2 {
+      font-size: clamp(20px, 2.5vw, 28px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 24px;
+    }
+
+    .panel-inner p {
+      color: #c4c4d4;
+      margin-bottom: 18px;
+      font-size: 15.5px;
+      line-height: 1.72;
+    }
+
+    .panel-inner p:last-child { margin-bottom: 0; }
+
+    .panel-inner strong { color: var(--text); font-weight: 600; }
+
+    /* ── CALLOUT ── */
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: var(--accent-dim);
+      border-radius: 0 8px 8px 0;
+      padding: 16px 20px;
+      margin: 24px 0;
+    }
+
+    .callout.warn { border-left-color: var(--accent2); background: var(--accent2-dim); }
+    .callout.danger { border-left-color: var(--red); background: rgba(247,106,106,0.08); }
+    .callout.success { border-left-color: var(--accent3); background: rgba(106,247,184,0.08); }
+
+    .callout-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 7px;
+    }
+
+    .callout.warn .callout-label { color: var(--accent2); }
+    .callout.danger .callout-label { color: var(--red); }
+    .callout.success .callout-label { color: var(--accent3); }
+
+    .callout p { color: var(--text); font-size: 14.5px; margin: 0; line-height: 1.6; }
+
+    /* ── PULL QUOTE ── */
+    .pq {
+      font-family: var(--serif);
+      font-size: clamp(17px, 2vw, 22px);
+      font-style: italic;
+      line-height: 1.5;
+      color: var(--text);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 0 28px 20px;
+      margin: 28px 0;
+      position: relative;
+    }
+
+    .pq::before {
+      content: '"';
+      position: absolute;
+      top: 14px; left: -4px;
+      font-size: 64px;
+      line-height: 1;
+      color: var(--accent);
+      opacity: 0.25;
+      font-family: Georgia, serif;
+    }
+
+    .pq.op::before { color: var(--accent2); }
+
+    .pq-attr {
+      display: block;
+      font-family: var(--font);
+      font-size: 12px;
+      font-style: normal;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    /* ── FLOW DIAGRAM ── */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin: 24px 0;
+      overflow-x: auto;
+      padding: 4px 0 8px;
+    }
+
+    .flow-node {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      text-align: center;
+      flex-shrink: 0;
+      min-width: 100px;
+    }
+
+    .flow-icon { font-size: 18px; margin-bottom: 5px; }
+    .flow-label { font-size: 12px; font-weight: 600; }
+    .flow-sub { font-size: 10px; color: var(--muted); margin-top: 2px; line-height: 1.35; }
+
+    .flow-arr {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 4px;
+      gap: 2px;
+    }
+
+    .flow-arr-line {
+      width: 32px;
+      height: 1px;
+      background: var(--border2);
+      position: relative;
+    }
+
+    .flow-arr-line::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      top: -3px;
+      border: 4px solid transparent;
+      border-left-color: var(--muted);
+    }
+
+    .flow-arr-label {
+      font-size: 9px;
+      color: var(--accent2);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* ── PLAYER GRID ── */
+    .player-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 24px 0;
+    }
+
+    .player-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+      transition: border-color 0.2s;
+    }
+
+    .player-card:hover { border-color: var(--border2); }
+    .player-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+    .player-model { font-size: 11px; color: var(--accent); font-weight: 500; margin-bottom: 8px; }
+    .player-desc { font-size: 12.5px; color: var(--muted2); line-height: 1.5; }
+
+    /* ── RISK STACK ── */
+    .risk-stack { display: flex; flex-direction: column; gap: 10px; margin: 24px 0; }
+
+    .risk-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 18px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .risk-item.hot { border-color: rgba(247,106,106,0.3); }
+
+    .risk-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .risk-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+    .risk-desc { font-size: 12.5px; color: var(--muted2); line-height: 1.5; }
+
+    /* ── RULE CARD ── */
+    .rule-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 10px 0;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+    }
+
+    .rule-name { color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+    .rule-theme { color: var(--muted); font-size: 11px; margin-bottom: 6px; }
+    .rule-signal { color: var(--accent3); line-height: 1.5; }
+
+    /* ── COMPARE TABLE ── */
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 24px 0;
+    }
+
+    .compare-col { background: var(--surface); }
+
+    .compare-head {
+      padding: 12px 18px;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .compare-head.g { color: var(--accent2); }
+    .compare-head.b { color: var(--accent); }
+
+    .compare-row {
+      padding: 12px 18px;
+      font-size: 12.5px;
+      color: var(--muted2);
+      border-bottom: 1px solid var(--border);
+      line-height: 1.5;
+    }
+
+    .compare-row:last-child { border-bottom: none; }
+
+    /* ── VERDICT BOX ── */
+    .verdict {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px 32px;
+      margin: 28px 0;
+    }
+
+    .verdict-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 12px;
+    }
+
+    .verdict p {
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--text);
+      margin: 0;
+    }
+
+    /* ── CLOSING ── */
+    .closing {
+      background: linear-gradient(135deg, rgba(124,106,247,0.07), rgba(247,162,106,0.07));
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 44px 48px;
+      margin: 32px 0 0;
+      text-align: center;
+    }
+
+    .closing p {
+      font-family: var(--serif);
+      font-size: clamp(16px, 2vw, 21px);
+      font-style: italic;
+      line-height: 1.55;
+      color: var(--text);
+      max-width: 560px;
+      margin: 0 auto 14px;
+    }
+
+    .closing-attr {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ── SOURCES ── */
+    .sources {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 40px 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sources p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .sources a { color: var(--muted2); text-decoration: underline; }
+
+    /* ── CONTEXT BAR ── */
+    .context-bar {
+      background: rgba(124,106,247,0.07);
+      border-bottom: 1px solid rgba(124,106,247,0.2);
+      padding: 9px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 300;
+    }
+
+    .context-bar-text {
+      font-size: 11.5px;
+      color: var(--muted2);
+      line-height: 1.4;
+    }
+
+    .context-bar-text em {
+      font-style: normal;
+      color: var(--text);
+    }
+
+    .context-bar-author {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+    }
+
+    /* shift nav and main down for context bar */
+    .nav { top: 37px; }
+    main { padding-top: calc(54px + 37px); }
+
+    /* ── AUTHOR BIO ── */
+    .author-bio {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 40px 32px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+    }
+
+    .author-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .author-name {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .author-title {
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .author-desc {
+      font-size: 13px;
+      color: var(--muted2);
+      line-height: 1.6;
+      max-width: 580px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 32px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 700px) {
+      .context-bar { flex-direction: column; gap: 4px; padding: 8px 16px; }
+      .context-bar-author { align-self: flex-start; }
+      .nav { top: 62px; }
+      main { padding-top: calc(54px + 62px); }
+      .author-bio { flex-direction: column; }
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      .nav { padding: 0 16px; }
+      .nav-hint { display: none; }
+      .hero { padding: 52px 20px 40px; }
+      .stats { flex-wrap: wrap; }
+      .stat { flex: 1 1 45%; }
+      .map-wrap, .content-panel-wrap, .sources { padding-left: 16px; padding-right: 16px; }
+      .panel-inner { padding: 24px 20px 32px; }
+      .player-grid { grid-template-columns: 1fr; }
+      .compare { grid-template-columns: 1fr; }
+      .closing { padding: 28px 20px; }
+      .node { width: 130px; }
+      .node-inner { padding: 12px 12px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- CONTEXT BAR -->
+<div class="context-bar">
+  <span class="context-bar-text">
+    Written in response to a PM hiring challenge: <em>"Explain why and when BNPL will blow up — or make the case it won't. Whoever makes the stronger argument wins an interview."</em>
+  </span>
+  <span class="context-bar-author">Dhiraj Bhat · Financial Crime &amp; Risk</span>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <span class="nav-brand">BNPL Decoded</span>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('ex', this)">The Explainer</button>
+    <button class="nav-tab t2" onclick="switchTab('op', this)">Will It Blow Up?</button>
+  </div>
+  <span class="nav-hint">Click any node to explore</span>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- TAB 1: EXPLAINER                                      -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="tab-ex" class="tab-panel active">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Fintech Explainer</div>
+    <h1>Buy Now, Pay Later:<br>What's <em>Actually</em> Going On</h1>
+    <p class="hero-sub">A no-fluff breakdown of how BNPL works, where the money flows, who the players are, and what the risk stack really looks like — for someone in fintech who's heard of it but hasn't gone deep.</p>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-n" style="color:var(--accent)">$560B</div>
+        <div class="stat-l">Global BNPL GMV (2025)</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" style="color:var(--accent2)">91.5M</div>
+        <div class="stat-l">U.S. users (2025)</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" style="color:var(--yellow)">41%</div>
+        <div class="stat-l">Users who missed a payment in 2025</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" style="color:var(--accent3)">&lt;2%</div>
+        <div class="stat-l">Official delinquency rate</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NODE MAP -->
+  <div class="map-wrap">
+    <div class="map-label">Select a section to explore</div>
+    <div class="node-flow">
+
+      <div class="node active" id="node-ex-1" onclick="toggleNode('ex-1','ex')">
+        <div class="node-inner">
+          <div class="node-num">01</div>
+          <div class="node-title">The Pitch</div>
+          <div class="node-teaser">What it is and why merchants pay for it</div>
+        </div>
+        <div class="node-arrow"></div>
+      </div>
+
+      <div class="node-connector"><div class="node-connector-dot"></div></div>
+
+      <div class="node" id="node-ex-2" onclick="toggleNode('ex-2','ex')">
+        <div class="node-inner">
+          <div class="node-num">02</div>
+          <div class="node-title">Follow the Money</div>
+          <div class="node-teaser">How value flows across all four parties</div>
+        </div>
+        <div class="node-arrow"></div>
+      </div>
+
+      <div class="node-connector"><div class="node-connector-dot"></div></div>
+
+      <div class="node" id="node-ex-3" onclick="toggleNode('ex-3','ex')">
+        <div class="node-inner">
+          <div class="node-num">03</div>
+          <div class="node-title">The Underwriting Bet</div>
+          <div class="node-teaser">Data thinness as a feature, not a bug</div>
+        </div>
+        <div class="node-arrow"></div>
+      </div>
+
+      <div class="node-connector"><div class="node-connector-dot"></div></div>
+
+      <div class="node" id="node-ex-4" onclick="toggleNode('ex-4','ex')">
+        <div class="node-inner">
+          <div class="node-num">04</div>
+          <div class="node-title">The Players</div>
+          <div class="node-teaser">Klarna, Affirm, Afterpay, PayPal</div>
+        </div>
+        <div class="node-arrow"></div>
+      </div>
+
+      <div class="node-connector"><div class="node-connector-dot"></div></div>
+
+      <div class="node" id="node-ex-5" onclick="toggleNode('ex-5','ex')">
+        <div class="node-inner">
+          <div class="node-num">05</div>
+          <div class="node-title">The Risk Stack</div>
+          <div class="node-teaser">Credit, regulatory, and the hidden layer</div>
+        </div>
+        <div class="node-arrow"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONTENT PANELS -->
+  <div class="content-panel-wrap">
+
+    <!-- Panel 1: The Pitch -->
+    <div class="content-panel open" id="panel-ex-1">
+      <div class="panel-inner">
+        <div class="panel-eyebrow">Section 01 — The Pitch</div>
+        <h2>What BNPL Is and Why Merchants Love It</h2>
+        <p>Buy Now Pay Later is a short-term installment credit product. The canonical version — "pay-in-four" — splits a purchase into four equal payments over six weeks, zero interest, zero fees if you pay on time. You buy $200 headphones, you pay $50 today, $50 in two weeks, $50 in four, $50 in six. Simple.</p>
+        <p>What's interesting isn't the product — it's who's actually paying for it. <strong>You, the consumer, aren't the customer. The merchant is.</strong> Merchants pay BNPL providers a merchant discount rate (MDR) of 2–8% of transaction value — higher than what they pay Visa — because BNPL reliably increases checkout conversion, lifts average order value, and pulls in buyers who would have bounced at the full price.</p>
+        <div class="callout">
+          <div class="callout-label">The Core Mechanic</div>
+          <p>BNPL is a merchant marketing tool that requires a credit product to function. The merchant pays to subsidize the consumer's payment flexibility. Everything downstream — the underwriting shortcuts, the growth playbook, the fraud surface — flows from this structural choice.</p>
+        </div>
+        <p>Beyond pay-in-four, providers also offer longer-term installment loans (6–60 months) that charge consumers direct interest, sometimes up to 36.99% APR. Affirm leans heavily into this. These products look more like traditional personal loans, generate revenue more like them too, and carry meaningfully different risk profiles than the short-cycle pay-in-four model.</p>
+      </div>
+    </div>
+
+    <!-- Panel 2: Follow the Money -->
+    <div class="content-panel" id="panel-ex-2">
+      <div class="panel-inner">
+        <div class="panel-eyebrow">Section 02 — Follow the Money</div>
+        <h2>How Value Flows Across All Four Parties</h2>
+        <p>A BNPL transaction involves four actors. Understanding how money moves between them explains why the model works — and where it breaks.</p>
+        <div class="flow">
+          <div class="flow-node">
+            <div class="flow-icon">🛍️</div>
+            <div class="flow-label">Consumer</div>
+            <div class="flow-sub">Buys goods, repays in installments</div>
+          </div>
+          <div class="flow-arr">
+            <div class="flow-arr-line"></div>
+            <div class="flow-arr-label">purchase</div>
+          </div>
+          <div class="flow-node">
+            <div class="flow-icon">🏪</div>
+            <div class="flow-label">Merchant</div>
+            <div class="flow-sub">Pays MDR (2–8%), gets paid upfront</div>
+          </div>
+          <div class="flow-arr">
+            <div class="flow-arr-line"></div>
+            <div class="flow-arr-label">MDR fee</div>
+          </div>
+          <div class="flow-node">
+            <div class="flow-icon">⚡</div>
+            <div class="flow-label">BNPL Provider</div>
+            <div class="flow-sub">Underwrites, collects installments</div>
+          </div>
+          <div class="flow-arr">
+            <div class="flow-arr-line"></div>
+            <div class="flow-arr-label">ABS / warehouse</div>
+          </div>
+          <div class="flow-node">
+            <div class="flow-icon">🏦</div>
+            <div class="flow-label">Capital Markets</div>
+            <div class="flow-sub">Funds the whole machine</div>
+          </div>
+        </div>
+        <p>The BNPL provider pays the merchant in full, immediately. The provider then collects the consumer's installments over six weeks. The spread between the MDR collected and the cost of funding those loans is the margin — thin, but high-velocity at scale.</p>
+        <p>To fund this at scale, providers use warehouse credit lines (short-term, revolving) and securitize portfolios into asset-backed securities (ABS). Affirm's capital structure relies heavily on forward flow agreements with institutional buyers who purchase receivables. This is where things get interesting from a risk perspective: ABS investors are pricing pools of borrowers whose full debt load is invisible, because most BNPL loans never touch a credit bureau.</p>
+        <div class="callout warn">
+          <div class="callout-label">The Funding Paradox</div>
+          <p>Investors buy receivables backed by borrowers whose total BNPL exposure — across Klarna, Affirm, Afterpay — they cannot see. The pricing models are built on incomplete information, and every party in the chain knows it.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 3: The Underwriting Bet -->
+    <div class="content-panel" id="panel-ex-3">
+      <div class="panel-inner">
+        <div class="panel-eyebrow">Section 03 — The Underwriting Bet</div>
+        <h2>Data Thinness as a Feature, Not a Bug</h2>
+        <p>Traditional credit underwriting pulls a full credit report, assesses total debt exposure, and makes a decision. BNPL does none of that for pay-in-four. Soft credit pull only. No hard inquiry. No reporting of the loan to credit bureaus. Approval based on a proprietary model that weighs limited signals — mostly transaction history within the BNPL platform itself, some thin bureau data, and behavioral patterns.</p>
+        <p>The result: approval rates jumped from 56% in 2019 to 79% in 2022 as providers chased growth into thinner and thinner credit profiles. That wasn't an accident — it was a deliberate choice. More approvals meant more merchants, more GMV, more revenue.</p>
+        <div class="pq">
+          Because pay-in-four loans don't appear on credit reports, consumers can stack BNPL across multiple providers simultaneously. A borrower with $800 in active BNPL obligations across Klarna, Affirm, and Afterpay looks completely clean on a FICO pull.
+          <span class="pq-attr">— CFPB, January 2025</span>
+        </div>
+        <p>This is what the industry calls the "phantom debt" problem. It's not just a consumer harm issue — it's an underwriting integrity issue. BNPL providers are making credit decisions without knowing a borrower's true liability. And by not reporting their own loans to bureaus, they're actively perpetuating that blindness across the entire sector.</p>
+        <p>BNPL providers know this. The reason they resist bureau furnishing isn't technical — it's that their first-party transaction data is a competitive moat. Once loans hit the bureau, every competitor can see repayment behavior. The opacity is a business decision, not a product philosophy. And it's the same decision that makes the product uniquely exploitable.</p>
+      </div>
+    </div>
+
+    <!-- Panel 4: The Players -->
+    <div class="content-panel" id="panel-ex-4">
+      <div class="panel-inner">
+        <div class="panel-eyebrow">Section 04 — The Players</div>
+        <h2>Who's Who in the Market</h2>
+        <p>Four dominant players have emerged from the BNPL wave, each with a meaningfully different model and risk profile.</p>
+        <div class="player-grid">
+          <div class="player-card">
+            <div class="player-name">Klarna</div>
+            <div class="player-model">Consumer app + merchant network</div>
+            <div class="player-desc">Swedish fintech, IPO'd at $19.65B in 2025 (down from a $45.6B 2021 peak). Operates across pay-in-four, longer-term loans, and a shopping app. Largest BNPL player globally. Revenue from MDR, consumer interest, and data licensing.</div>
+          </div>
+          <div class="player-card">
+            <div class="player-name">Affirm</div>
+            <div class="player-model">Longer-term installment loans</div>
+            <div class="player-desc">U.S.-focused, publicly traded, 46% revenue growth in 2025. Leans into 6–36 month loans at transparent APRs. Key partner: Amazon. More bank-like than peers — hard pulls for longer loans, some bureau reporting. The most creditworthy model in the space.</div>
+          </div>
+          <div class="player-card">
+            <div class="player-name">Afterpay (Block)</div>
+            <div class="player-model">Pay-in-four, social commerce</div>
+            <div class="player-desc">Acquired by Block (Square/Cash App) for $29B in 2022 — a deal that now looks dramatically overpriced. Pure pay-in-four, strong in fashion and apparel. The Cash App integration is the long-term thesis, not the BNPL product itself.</div>
+          </div>
+          <div class="player-card">
+            <div class="player-name">PayPal BNPL</div>
+            <div class="player-model">Distribution moat</div>
+            <div class="player-desc">Not a pure-play — PayPal bolted installments onto its existing 430M-account checkout network. No standalone business to run, no merchant acquisition cost to absorb. The "distribution wins" argument in one company.</div>
+          </div>
+        </div>
+        <p>Below these four: Sezzle, Zip, Splitit — smaller players already consolidating or pivoting to B2B. The market structure is clarifying fast. Regulatory pressure and capital costs will finish the job that the 2022 rate hikes started.</p>
+      </div>
+    </div>
+
+    <!-- Panel 5: The Risk Stack -->
+    <div class="content-panel" id="panel-ex-5">
+      <div class="panel-inner">
+        <div class="panel-eyebrow">Section 05 — The Risk Stack</div>
+        <h2>Three Layers, One Structural Blind Spot</h2>
+        <p>BNPL's risk profile has three distinct layers. Most coverage focuses on the first. The third is where things get structurally interesting — and where the real exposure lives.</p>
+        <div class="risk-stack">
+          <div class="risk-item">
+            <div class="risk-icon">💳</div>
+            <div>
+              <div class="risk-title">Credit Risk</div>
+              <div class="risk-desc">Official delinquency is below 2%, but 41% of users admitted a late payment in 2025 — up from 34% in 2024. These aren't the same metric. Automatic debit pulls suppress official numbers while consumers fall behind on other obligations to keep BNPL current. And 25% of users now finance groceries. When short-term credit covers non-discretionary spending, that's not a payment preference — it's a liquidity problem in slow motion.</div>
+            </div>
+          </div>
+          <div class="risk-item">
+            <div class="risk-icon">⚖️</div>
+            <div>
+              <div class="risk-title">Regulatory Risk</div>
+              <div class="risk-desc">The CFPB's 2024 rule classifying BNPL under Reg Z adds dispute rights, periodic statements, and refund obligations — compliance costs that hit smaller players hardest. Bureau furnishing requirements, when they come, will restructure the entire sector's underwriting model overnight. This is consolidation pressure, not existential risk, for well-capitalized players.</div>
+            </div>
+          </div>
+          <div class="risk-item hot">
+            <div class="risk-icon">🔍</div>
+            <div>
+              <div class="risk-title">Fraud & Identity Risk — The Hidden Layer</div>
+              <div class="risk-desc">Soft credit pulls and no bureau reporting don't just create a phantom debt problem — they create a phantom identity problem. BNPL's onboarding is structurally easier to abuse than any other credit product. Synthetic identities, loan stacking across providers, device cluster rings, and bust-out schemes all exploit the same gap: BNPL can't see what it can't measure, and it deliberately chose not to measure much.</div>
+            </div>
+          </div>
+        </div>
+        <div class="callout danger">
+          <div class="callout-label">The Core Tension</div>
+          <p>The same design decision that made BNPL frictionless to adopt — minimal underwriting, no hard pulls, no bureau reporting — is the decision that makes it uniquely vulnerable to fraud. You cannot separate the growth model from the risk model. They are the same model.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-panel-wrap -->
+</div><!-- /tab-ex -->
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- TAB 2: OPINION                                        -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="tab-op" class="tab-panel">
+
+  <div class="hero">
+    <div class="hero-eyebrow op">Opinion — Risk Lens</div>
+    <h1>BNPL Won't Blow Up.<br>It'll Just <em class="purple">Become</em> Groupon.</h1>
+    <p class="hero-sub">A financial crime professional's case that BNPL's real problem isn't systemic risk — it's structural blindness. And structural blindness has a very specific, very predictable trajectory.</p>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-n" style="color:var(--accent2)">$6B</div>
+        <div class="stat-l">Google's offer for Groupon — turned down in 2010</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" style="color:var(--red)">$40M</div>
+        <div class="stat-l">Groupon's market cap today</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" style="color:var(--yellow)">7</div>
+        <div class="stat-l">Fraud attack surfaces modeled against BNPL</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" style="color:var(--accent3)">0</div>
+        <div class="stat-l">BNPL providers with full consortium fraud data by default</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NODE MAP -->
+  <div class="map-wrap">
+    <div class="map-label">Select a section to explore</div>
+    <div class="node-flow">
+
+      <div class="node op-node active" id="node-op-1" onclick="toggleNode('op-1','op')">
+        <div class="node-inner">
+          <div class="node-num">01</div>
+          <div class="node-title">Wrong Question</div>
+          <div class="node-teaser">What everyone's missing about the BNPL debate</div>
+        </div>
+        <div class="node-arrow"></div>
+      </div>
+
+      <div class="node-connector"><div class="node-connector-dot"></div></div>
+
+      <div class="node op-node" id="node-op-2" onclick="toggleNode('op-2','op')">
+        <div class="node-inner">
+          <div class="node-num">02</div>
+          <div class="node-title">The Bull Case</div>
+          <div class="node-teaser">Steel-manned, fairly presented</div>
+        </div>
+        <div class="node-arrow"></div>
+      </div>
+
+      <div class="node-connector"><div class="node-connector-dot"></div></div>
+
+      <div class="node op-node" id="node-op-3" onclick="toggleNode('op-3','op')">
+        <div class="node-inner">
+          <div class="node-num">03</div>
+          <div class="node-title">What Fraud Rules Show</div>
+          <div class="node-teaser">7 attack surfaces, one root cause</div>
+        </div>
+        <div class="node-arrow"></div>
+      </div>
+
+      <div class="node-connector"><div class="node-connector-dot"></div></div>
+
+      <div class="node op-node" id="node-op-4" onclick="toggleNode('op-4','op')">
+        <div class="node-inner">
+          <div class="node-num">04</div>
+          <div class="node-title">The Groupon Arc</div>
+          <div class="node-teaser">A very specific parallel, drawn precisely</div>
+        </div>
+        <div class="node-arrow"></div>
+      </div>
+
+      <div class="node-connector"><div class="node-connector-dot"></div></div>
+
+      <div class="node op-node" id="node-op-5" onclick="toggleNode('op-5','op')">
+        <div class="node-inner">
+          <div class="node-num">05</div>
+          <div class="node-title">The Verdict</div>
+          <div class="node-teaser">"Buy Now Pay Never" isn't a joke</div>
+        </div>
+        <div class="node-arrow"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- OPINION CONTENT PANELS -->
+  <div class="content-panel-wrap">
+
+    <!-- Panel 1: Wrong Question -->
+    <div class="content-panel op open" id="panel-op-1">
+      <div class="panel-inner">
+        <div class="panel-eyebrow op">The Setup</div>
+        <h2>Everyone's Asking the Wrong Question</h2>
+        <p>The BNPL discourse has collapsed into a binary: will it cause a financial crisis, or won't it? That's the wrong frame. At $36B in U.S. issuance against $17.9T in total household debt, BNPL is 0.2% of consumer credit. A catastrophic 30% charge-off rate on the entire U.S. book produces roughly $10B in losses — a bad quarter for the sector, not a systemic event. It's not 2008.</p>
+        <p>The more interesting question — the one that actually matters for anyone holding BNPL equity, building fraud controls for a lender, or evaluating exposure — is this: <strong>is BNPL structurally capable of knowing when it's losing?</strong></p>
+        <p>I don't think it is. And I think that specific blindness has a very predictable outcome — one we've watched play out before in a company that also scaled fast on merchant subsidies, also couldn't distinguish quality customers from abusers at volume, and also got quietly eaten by the platforms it depended on. That company is Groupon. The trajectory isn't a blowup. It's a slow fade into infrastructure that nobody talks about anymore.</p>
+      </div>
+    </div>
+
+    <!-- Panel 2: Bull Case -->
+    <div class="content-panel op" id="panel-op-2">
+      <div class="panel-inner">
+        <div class="panel-eyebrow op">Steel Man</div>
+        <h2>The Bull Case, Fairly Presented</h2>
+        <p>The optimists have a genuinely defensible position. Let me give them their strongest argument before I dismantle the framing.</p>
+        <p><strong>Size constraints limit systemic damage.</strong> BNPL is too small to cause a financial crisis. Short loan durations (6-week average) mean losses resolve quickly — there's no 30-year mortgage sitting underwater. Affirm's 90+ day serious delinquency was 0.7% in Q4 2024, versus 7.2% for credit cards.</p>
+        <p><strong>Regulation professionalizes, it doesn't destroy.</strong> The CFPB's Reg Z classification creates compliance burdens that shake out undercapitalized players. Klarna's $19.65B IPO and Affirm's 46% revenue growth suggest capital markets believe in the survivors. Regulatory moats benefit incumbents. The CARD Act didn't kill credit cards — it made the strongest issuers stronger.</p>
+        <p><strong>Behavioral stickiness is a real credit feature.</strong> 76% of BNPL late payments are less than one week overdue — paycheck timing mismatches, not defaults. Consumers prioritize BNPL repayment because the amounts are small and losing access matters to them.</p>
+        <div class="callout success">
+          <div class="callout-label">Bull's Conclusion</div>
+          <p>2–3 smaller players fail or get acquired. Bureau integration reduces phantom debt risk over 2–3 years. Large players grow into travel, healthcare, and B2B. The market matures — exactly like credit cards did post-CARD Act — rather than implodes.</p>
+        </div>
+        <p>I don't entirely disagree. The systemic risk bull case is probably right. But it's answering a different question than the one I'm asking.</p>
+      </div>
+    </div>
+
+    <!-- Panel 3: Fraud Rules -->
+    <div class="content-panel op" id="panel-op-3">
+      <div class="panel-inner">
+        <div class="panel-eyebrow op">The Bear Case</div>
+        <h2>What the Fraud Rules Actually Show</h2>
+        <p>I've modeled fraud rules for BNPL — not hypothetically, but as actual detection logic built against the attack surfaces this product creates. The exercise reveals something specific: BNPL doesn't have a fraud problem. It has seven distinct ones, all rooted in the same structural gap.</p>
+
+        <div class="rule-card">
+          <div class="rule-name">BNPL_NEW_ACCT_VELOCITY_BURST</div>
+          <div class="rule-theme">Synthetic identity / promo abuse</div>
+          <div class="rule-signal">Account &lt;14 days + 4 txns across 3+ merchants in 48h + device &lt;72 hours old → HIGH alert</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-name">BNPL_DEVICE_CLUSTER_ABUSE_RING</div>
+          <div class="rule-theme">Coordinated fraud rings / money mules</div>
+          <div class="rule-signal">4+ distinct user accounts on one device fingerprint in 30 days + VPN / incognito / factory reset → CRITICAL alert</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-name">BNPL_LOAN_STACKING_CROSS_ACCOUNT</div>
+          <div class="rule-theme">Bust-out / synthetic identity</div>
+          <div class="rule-signal">3+ BNPL accounts opened across consortium in 30 days + $5K+ total exposure + account &lt;60 days → CRITICAL alert</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-name">BNPL_ATO_NEW_DEVICE_HIGH_VALUE</div>
+          <div class="rule-theme">Account takeover</div>
+          <div class="rule-signal">Mature account + unknown device + geo mismatch + transaction &gt;$500 → HIGH alert</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-name">BNPL_REFUND_ABUSE_VELOCITY</div>
+          <div class="rule-theme">Friendly fraud / wardrobing</div>
+          <div class="rule-signal">40%+ refund rate across 2+ merchants + 3+ refunds in 30 days + account &lt;180 days → MEDIUM alert</div>
+        </div>
+
+        <p style="margin-top: 20px;">Each rule exploits the same root condition: BNPL's approval model is thin, its data sharing is minimal, and its fraud detection is siloed. The loan stacking rule alone requires consortium data — cross-provider visibility into how much BNPL credit a consumer has outstanding. Most providers don't have this by default. They're underwriting in the dark.</p>
+
+        <div class="pq op">
+          The problem isn't that fraudsters are sophisticated. It's that BNPL's data model makes sophistication unnecessary.
+          <span class="pq-attr">— The actual insight from modeling these rules</span>
+        </div>
+
+        <p>This is thesis C — the one I find most accurate. BNPL can't distinguish between a legitimate new shopper, a synthetic identity, a bust-out fraudster, and a loan stacker. Not because fraud teams aren't smart. Because the product was architected to not know. The friction that would have created the detection signal was removed as a growth feature. Alex Johnson put the supply-side version of this well: BNPL is a merchant marketing instrument. And marketing-driven growth always degrades underwriting quality. You don't scale from 56% to 79% approval rates by getting better at risk — you do it by caring less about it.</p>
+      </div>
+    </div>
+
+    <!-- Panel 4: Groupon Arc -->
+    <div class="content-panel op" id="panel-op-4">
+      <div class="panel-inner">
+        <div class="panel-eyebrow op">The Cockroach Comparison</div>
+        <h2>BNPL Is on the Groupon Trajectory</h2>
+        <p>Groupon went from $0 to $1 billion in revenue faster than any company in history. They turned down a $6 billion acquisition offer from Google in 2010. They peaked at $26 per share. Today their market cap is roughly $40 million. They still exist, still process transactions, and nobody's writing about them. That's the cockroach outcome — not dead, not dominant, just there.</p>
+        <p>The parallels to BNPL are specific enough to be worth drawing precisely:</p>
+        <div class="compare">
+          <div class="compare-col">
+            <div class="compare-head g">Groupon</div>
+            <div class="compare-row">Scaled on merchant subsidies. Merchants paid because Groupon drove traffic and volume, not because the economics worked long-term.</div>
+            <div class="compare-row">Couldn't distinguish a loyal customer from a coupon tourist at scale. Merchant economics collapsed when repeat rates didn't materialize.</div>
+            <div class="compare-row">Built on top of platforms (Google, local search) that eventually built the feature natively. Google Offers, then Google Maps deals, made Groupon redundant.</div>
+            <div class="compare-row">Turned down the acquirer that would have embedded it as permanent infrastructure. Now too small to matter, too entrenched to die.</div>
+          </div>
+          <div class="compare-col">
+            <div class="compare-head b">BNPL</div>
+            <div class="compare-row">Scales on merchant discount rates. Merchants pay because BNPL drives conversion — not because the long-term unit economics always justify the MDR.</div>
+            <div class="compare-row">Can't distinguish a creditworthy shopper from a synthetic ID or a loan stacker. Unit economics depend on fraud rates staying low, with no structural enforcement mechanism.</div>
+            <div class="compare-row">Built on top of Shopify, Amazon, and card networks now building installments natively — Shop Pay, Amazon Pay Later, card-linked installments at lower cost.</div>
+            <div class="compare-row">Apple Pay Later launched, died, was replaced by an Affirm partnership. The platform absorbed the function. The layering has already begun.</div>
+          </div>
+        </div>
+        <div class="callout warn">
+          <div class="callout-label">The Disintermediation Signal</div>
+          <p>Klarna's 2025 IPO valued the company at $19.65B — down 57% from its 2021 peak of $45.6B. That's not a blowup. That's the market repricing what this category is actually worth once the platform layer starts offering the same feature at a lower MDR. It's the Groupon arc in slow motion.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 5: Verdict -->
+    <div class="content-panel op" id="panel-op-5">
+      <div class="panel-inner">
+        <div class="panel-eyebrow op">The Verdict</div>
+        <h2>"Buy Now Pay Never" Isn't a Joke. It's a Description.</h2>
+        <p>I've heard it from people inside the industry, said with a knowing laugh: "Buy Now Pay Never." The sarcasm doesn't fully land because it's accurate. It describes what happens when you grow approval rates faster than your ability to know who you're approving — when the underwriting model is deliberately blinded as a product decision, and the fraud surface expands to fill every gap the data model creates.</p>
+        <p>BNPL works well for the Wayfair use case: high-consideration, discretionary, ecommerce, a consumer who wants the item and can plausibly cover it over six weeks. The merchant gets the conversion lift, the consumer gets the flexibility, and the model works as designed. That's real and defensible.</p>
+        <p>It doesn't scale cleanly to groceries, medical expenses, and rent gaps — which is exactly where 25% of 2025 BNPL users have gone. When the use case becomes liquidity management rather than purchase optimization, the fraud and default dynamics shift entirely. The bust-out pattern looks different. The refund abuse looks different. And the underwriting model — built for discretionary ecommerce — has no reliable way to detect the difference.</p>
+        <div class="verdict">
+          <div class="verdict-label">The Thesis</div>
+          <p>BNPL isn't going to blow up the financial system. It's going to slowly become infrastructure — absorbed into checkout flows, card products, and super-apps — with 2–3 survivors and a long tail of cautionary tales. The fraud losses will be real but not systemic. The consumer harm will be real and underreported. And the pure-play BNPL equity story will look, in retrospect, a lot like buying Groupon at $15.</p>
+        </div>
+        <p>For risk practitioners: the question to ask isn't "what's the delinquency rate?" It's "what's the delinquency rate on the borrowers you can't see yet?" The seven fraud rule surfaces I mapped aren't edge cases — they're the primary attack surface of the product category, created by the same architectural choices that made BNPL easy to adopt in the first place.</p>
+        <div class="closing">
+          <p>The real credit stress isn't in the delinquency number. It's in the gap between what BNPL providers measure and what they're actually exposed to. That gap has a name in fraud: the unknown unknown. And unknown unknowns don't stay unknown forever.</p>
+          <span class="closing-attr">— A financial crime professional's take, February 2026</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-panel-wrap -->
+</div><!-- /tab-op -->
+
+<!-- SOURCES -->
+<div class="sources">
+  <p><strong style="color:var(--muted2)">Sources:</strong> CFPB (Jan 2025) · Richmond Fed (Apr 2025) · Morgan Stanley AlphaWise · LendingTree Consumer Survey 2025 · eMarketer BNPL Forecast 2025 · Affirm Q4 2024 Earnings · Klarna S-1 (2025) · <a href="https://fintechtakes.com/articles/2024-06-28/biggest-bnpl-questions/" target="_blank">Alex Johnson, Fintech Takes — "The Biggest Questions in BNPL" (Jun 2024)</a> · Unit21 fraud rule modeling</p>
+</div>
+
+</main>
+
+<!-- AUTHOR BIO -->
+<div class="author-bio">
+  <div class="author-avatar">🔍</div>
+  <div>
+    <div class="author-name">Dhiraj Bhat</div>
+    <div class="author-title">Financial Crime &amp; Risk · Unit21</div>
+    <p class="author-desc">I work at the intersection of fraud detection, device intelligence, and financial crime compliance. I've modeled fraud rules against BNPL attack surfaces — the seven rules in Tab 2 are real detection logic, not hypotheticals. This one-pager is my answer to the PM challenge: BNPL won't blow up. It'll just become Groupon.</p>
+  </div>
+</div>
+
+<footer>BNPL Decoded · A PM candidate's one-pager · Dhiraj Bhat · February 2026</footer>
+
+<script>
+  // ── TAB SWITCHING ──
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── NODE TOGGLE ──
+  function toggleNode(nodeId, tabPrefix) {
+    const allNodes = document.querySelectorAll('#tab-' + tabPrefix + ' .node');
+    const allPanels = document.querySelectorAll('#tab-' + tabPrefix + ' .content-panel');
+    const clickedNode = document.getElementById('node-' + nodeId);
+    const targetPanel = document.getElementById('panel-' + nodeId);
+    const isAlreadyActive = clickedNode.classList.contains('active');
+
+    // Close all
+    allNodes.forEach(n => n.classList.remove('active'));
+    allPanels.forEach(p => p.classList.remove('open'));
+
+    // If wasn't active, open it
+    if (!isAlreadyActive) {
+      clickedNode.classList.add('active');
+      targetPanel.classList.add('open');
+      // Scroll panel into view smoothly
+      setTimeout(() => {
+        targetPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 50);
+    }
+  }
+
+  // ── INIT: open first node on each tab ──
+  document.addEventListener('DOMContentLoaded', () => {
+    // ex tab: node 1 open by default (already done in HTML)
+    // op tab: node 1 open by default (already done in HTML)
+  });
+</script>
+
+</body>
+</html>
